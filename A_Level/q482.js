@@ -1,4 +1,4 @@
-const lines = initTest2();
+const lines = initTest1();
 
 function initTest1() {
     const _lines = [];
@@ -60,34 +60,31 @@ function hasRoad() {
 
     const sIndex = getSIndex(spaceLines, h, w);
     console.log("find sIndex", sIndex);
-    const exitDirs = findExitDirections(sIndex, spaceLines, h, w)
 
-    // console.log('exitDirs', exitDirs);
-    for (let i = 0; i < exitDirs.length; i++) {
-        const exitDirIndex = exitDirs[i];
+    const foundIndexes = [];
 
-    }
-
-    let finding = true;
-    while (finding) {
-
-
-        finding = false;
-    }
+    const foundDir = findExitRecursive(sIndex, foundIndexes, spaceLines);
+    console.log("foundDir", foundDir);
 }
 
-function findExitRecursive(currentIndex, lines, h, w) {
-    const exitDirs = findExitDirections(currentIndex, lines, h, w);
-    
+function findExitRecursive(currentIndex, foundIndexes, lines) {
+    const exitDirs = findExitDirections(currentIndex, foundIndexes, lines);
+
+    console.log("currentIndex", currentIndex, "exitDirs", exitDirs);
+
     // dieu kien thoat de quy
     if (exitDirs.length === 0) {
-        return;
+        return false;
     }
+
+    let foundDir = false;
 
     for (let i = 0; i < exitDirs.length; i++) {
         const exitDirIndex = exitDirs[i];
-        findExitRecursive(exitDirIndex, lines, h, w);
+        foundDir = findExitRecursive(exitDirIndex, foundIndexes, lines);
     }
+
+    return foundDir;
 }
 
 /**
@@ -133,7 +130,7 @@ function getSIndex(lines, h, w) {
  * @param {*} w 
  * @returns number[][]
  */
-function findExitDirections(currentIndex, lines, h, w) {
+function findExitDirections(currentIndex, foundIndexes, lines) {
     const exitIndexDirs = [];
 
     const hIndex = getHIndex(currentIndex);
@@ -153,13 +150,30 @@ function findExitDirections(currentIndex, lines, h, w) {
         const char = findExitDirection(lines, indexFourDirs[i][0], indexFourDirs[i][1]);
         // console.log('char', i, char);
         const hasDir = isExitDirection(char);
+        const _isFoundIndex = isFoundIndex(indexFourDirs[i], foundIndexes);
         // console.log("hasDir", hasDir, indexFourDirs[i]);
-        if (hasDir) {
+        if (hasDir && !_isFoundIndex) {
             exitIndexDirs.push(indexFourDirs[i]);
+            foundIndexes.push(indexFourDirs[i]);
         }
     }
 
     return exitIndexDirs;
+}
+
+function isFoundIndex(currentIndex, foundIndexes) {
+    let found = false;
+
+    for (let i = 0; i < foundIndexes.length; i++) {
+        const foundIndex = foundIndexes[i];
+
+        if (foundIndex[0] === currentIndex[0] && foundIndex[1] === currentIndex[1]) {
+            found = true;
+            break;
+        }
+    }
+
+    return found;
 }
 
 function findExitDirection(lines, hIndex, wIndex) {
@@ -193,7 +207,7 @@ function isEdgeIndex(currentIndex, index,) {
 
 //         if (hIndexCur === hIndex) {
 //             const line = lines[hIndex];
-            
+
 //             if (wIndex < wIndexCur) {
 //                 const dotCount = "".
 //             }
