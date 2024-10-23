@@ -1,4 +1,4 @@
-const lines = initTest1();
+const lines = initTest2();
 
 function initTest1() {
     const _lines = [];
@@ -42,8 +42,8 @@ function initTest3() {
     return _lines;
 }
 
-console.table(lines);
-console.log(hasRoad() ? "NO" : "YES");
+// console.table(lines);
+console.log(hasRoad() ?  "YES" : "NO");
 
 function hasRoad() {
     const strLine1 = lines[0];
@@ -59,32 +59,41 @@ function hasRoad() {
     }
 
     const sIndex = getSIndex(spaceLines, h, w);
-    console.log("find sIndex", sIndex);
+    // console.log("find sIndex", sIndex);
 
     const foundIndexes = [];
 
-    const foundDir = findExitRecursive(sIndex, foundIndexes, spaceLines);
-    console.log("foundDir", foundDir);
+    const foundDir = findExitRecursive(sIndex, foundIndexes, spaceLines, false);
+    // console.log("foundDir", foundDir);
+    return foundDir;
 }
 
-function findExitRecursive(currentIndex, foundIndexes, lines) {
+/**
+ * 
+ * @param {*} currentIndex 
+ * @param {*} foundIndexes 
+ * @param {*} lines 
+ * @param {*} found 
+ * @returns 
+ */
+function findExitRecursive(currentIndex, foundIndexes, lines, found) {
     const exitDirs = findExitDirections(currentIndex, foundIndexes, lines);
 
-    console.log("currentIndex", currentIndex, "exitDirs", exitDirs);
+    // console.log("currentIndex", currentIndex, "exitDirs", exitDirs);
+    found = exitDirs.found;
 
     // dieu kien thoat de quy
-    if (exitDirs.length === 0) {
-        return false;
+    if(found) {
+        return found;
     }
 
-    let foundDir = false;
 
-    for (let i = 0; i < exitDirs.length; i++) {
-        const exitDirIndex = exitDirs[i];
-        foundDir = findExitRecursive(exitDirIndex, foundIndexes, lines);
+    for (let i = 0; i < exitDirs.exitIndexDirs.length; i++) {
+        const exitDirIndex = exitDirs.exitIndexDirs[i];
+        found = findExitRecursive(exitDirIndex, foundIndexes, lines, found);
     }
 
-    return foundDir;
+    return found;
 }
 
 /**
@@ -128,7 +137,7 @@ function getSIndex(lines, h, w) {
  * @param {*} lines 
  * @param {*} h 
  * @param {*} w 
- * @returns number[][]
+ * @returns {}
  */
 function findExitDirections(currentIndex, foundIndexes, lines) {
     const exitIndexDirs = [];
@@ -146,6 +155,8 @@ function findExitDirections(currentIndex, foundIndexes, lines) {
         [hIndex + 1, wIndex]
     ];
 
+    let found = false;
+
     for (let i = 0; i < 4; i++) {
         const char = findExitDirection(lines, indexFourDirs[i][0], indexFourDirs[i][1]);
         // console.log('char', i, char);
@@ -156,9 +167,13 @@ function findExitDirections(currentIndex, foundIndexes, lines) {
             exitIndexDirs.push(indexFourDirs[i]);
             foundIndexes.push(indexFourDirs[i]);
         }
+
+        if(char === undefined) {
+            found = true;
+        }
     }
 
-    return exitIndexDirs;
+    return { exitIndexDirs: exitIndexDirs, found: found };
 }
 
 function isFoundIndex(currentIndex, foundIndexes) {
@@ -233,8 +248,4 @@ function getHIndex(arrs) {
  */
 function getWIndex(arrs) {
     return arrs[1];
-}
-
-function findExitAround() {
-
 }
